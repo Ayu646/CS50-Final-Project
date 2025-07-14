@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Crisis Mapper</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map { height: 100vh; }
+    </style>
+</head>
+<body>
+    <h1>Real-Time Crisis Mapper</h1>
+    <div id="map"></div>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([20, 0], 2);  // World centered view
+
+        // Tile layer for the map background (OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        // Fetch events (crisis data) from the server
+        fetch('/events')
+            .then(response => response.json())
+            .then(events => {
+                // Loop through the events and place markers on the map
+                events.forEach(event => {
+                    L.marker([event.lat, event.lon])
+                        .addTo(map)
+                        .bindPopup(`<b>${event.title}</b><br>${event.description}<br><a href="${event.source}" target="_blank">Read more</a>`);
+                });
+            })
+            .catch(err => console.error('Error fetching events:', err));
+    </script>
+</body>
+</html>
